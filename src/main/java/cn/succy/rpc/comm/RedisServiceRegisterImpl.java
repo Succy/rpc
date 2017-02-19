@@ -25,16 +25,14 @@ public class RedisServiceRegisterImpl implements ServiceRegister {
         String rootKey = MD5Utils.encode(Constant.ROOT_KEY).substring(12, 28);
         // 作为hash的key
         String serviceNameKey = MD5Utils.encode(serviceName + serviceName.hashCode()).substring(8, 24);
-        // 作为存储address的list的key，同时是serviceName的hash的value
-        String addressListKey = MD5Utils.encode(serviceNameKey).substring(4, 20);
         if (!jedis.hexists(rootKey, serviceNameKey)){
             jedis.hset(rootKey, serviceNameKey, address);
-            logger.debug("Create service node. [rootKey = %s, serviceNode = %s]", rootKey, serviceNameKey);
+            logger.debug("Create service node. rootKey: %s, serviceNode: %s", rootKey, serviceNameKey);
         }else {
             String addrListVal = jedis.hget(rootKey, serviceNameKey);
             addrListVal += "-" + address;
             jedis.hset(rootKey, serviceNameKey, addrListVal);
-            logger.debug("Register address to service no. [serviceNode = %s, address = %s]", serviceNameKey, address);
+            logger.debug("Register address to service no. serviceNode: %s, address: %s", serviceNameKey, address);
         }
 
         jedis.close();
