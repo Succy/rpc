@@ -1,5 +1,6 @@
 package cn.succy.rpc.test;
 
+import cn.succy.rpc.comm.net.Request;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -16,5 +17,12 @@ public class TestClassLoader {
         if (in == null) {
             System.out.println("null");
         }
+    }
+
+    @Test
+    public void testGetClassName() {
+        Request request = new Request();
+        Class<?> clazz = request.getClass();
+        System.out.println("class name " + clazz.getName());
     }
 }

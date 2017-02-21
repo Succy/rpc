@@ -8,6 +8,33 @@ package cn.succy.rpc.comm.util;
  **/
 
 public class Constant {
-    private Constant(){}
+    private Constant() {
+    }
+
     public static final String ROOT_KEY = "rpc";
+
+    /**
+     * 通过内部类定义响应码
+     */
+    public static final class RespCode {
+        public static final int OK = 0;
+        public static final int ERROR = -1;
+    }
+
+
+    /**
+     * 通过内部类定义响应消息文本
+     */
+    public static final class RespMsg {
+        public static final String getMsg(int respCode) {
+            switch (respCode) {
+                case RespCode.OK:
+                    return "OK";
+                case RespCode.ERROR:
+                    return "Error";
+                default:
+                    return "";
+            }
+        }
+    }
 }

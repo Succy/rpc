@@ -34,7 +34,7 @@ public class LoggerFactory {
                 mConfigFileName = "log4j.properties";
                 in = ClassLoader.getSystemResourceAsStream(mConfigFileName);
             } else {
-                in = new FileInputStream(mConfigFileName);
+                    in = new FileInputStream(mConfigFileName);
             }
             if (in == null) {
                 logger = new LoggerJdkAdapter(clazz);
@@ -44,6 +44,7 @@ public class LoggerFactory {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            mConfigFileName = null;
             try {
                 if (in != null) {
                     in.close();
