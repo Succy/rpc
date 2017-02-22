@@ -1,6 +1,8 @@
 package cn.succy.rpc.client;
 
 import cn.succy.rpc.comm.ServiceDiscover;
+import cn.succy.rpc.comm.log.Logger;
+import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
 
@@ -19,13 +21,14 @@ import java.util.UUID;
  * @date 2017/2/22 9:52
  */
 public class RpcClientProxy {
-    private String host;
-    private int port;
-    private ServiceDiscover discover;
+    //private String host;
+    //private int port;
+    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
+    private final ServiceDiscover discover;
 
-    public RpcClientProxy(String host, int port, ServiceDiscover discover) {
-        this.host = host;
-        this.port = port;
+    public RpcClientProxy(ServiceDiscover discover) {
+        //this.host = host;
+        //this.port = port;
         this.discover = discover;
     }
 
@@ -45,13 +48,33 @@ public class RpcClientProxy {
                 request.setMethodName(method.getName());
                 request.setParamTypes(method.getParameterTypes());
                 request.setParams(args);
+                request.setServiceVersion(version);
 
-                RpcClient client = new RpcClient(host, port);
-                Response response = client.send(request);
-                if (response == null) {
-                    throw new RuntimeException("");
+                String serviceName = request.getInterfaceName();
+                if (discover == null) {
+                    logger.error("discover must be not null");
+                    throw new RuntimeException("discover is null!");
                 }
-                return response;
+                if (version != null && !"".equals(version.trim())) {
+                    serviceName += "-" + version;
+                }
+                String serverAddress = discover.discover(serviceName);
+                if (!"".equals(serverAddress.trim())) {
+                    String[] addrArr = serverAddress.split(":");
+                    if (addrArr.length == 2) {
+                        String host = addrArr[0];
+                        int port = Integer.parseInt(addrArr[1]);
+                        RpcClient client = new RpcClient(host, port);
+                        Response response = client.send(request);
+                        if (response == null) {
+                            logger.error("receive response fail");
+                            throw new RuntimeException("receive response fail");
+                        } else {
+                            return response;
+                        }
+                    }
+                }
+                return null;
             }
         });
     }
