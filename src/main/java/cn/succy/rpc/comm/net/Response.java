@@ -44,4 +44,14 @@ public class Response {
     public void setData(Object data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "requestId='" + requestId + '\'' +
+                ", respCode=" + respCode +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
