@@ -5,6 +5,7 @@ import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
+import cn.succy.rpc.comm.util.Constant;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -25,6 +26,10 @@ public class RpcClientProxy {
     //private int port;
     private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
     private final ServiceDiscover discover;
+
+    private boolean isSuccess;
+    private Response response;
+
 
     public RpcClientProxy(ServiceDiscover discover) {
         //this.host = host;
@@ -65,17 +70,31 @@ public class RpcClientProxy {
                         String host = addrArr[0];
                         int port = Integer.parseInt(addrArr[1]);
                         RpcClient client = new RpcClient(host, port);
-                        Response response = client.send(request);
-                        if (response == null) {
+                        Response resp = client.send(request);
+                        if (resp == null) {
                             logger.error("receive response fail");
                             throw new RuntimeException("receive response fail");
                         } else {
-                            return response;
+                            // 响应表示成功
+                            if (resp.getRespCode() == Constant.RespCode.OK) {
+                                RpcClientProxy.this.isSuccess = true;
+                                RpcClientProxy.this.response = resp;
+                                return resp.getData();
+                            }
                         }
                     }
                 }
                 return null;
             }
         });
+    }// end of getClientProxy
+
+    // Getter
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
+    public Response getResponse() {
+        return response;
     }
 }

@@ -25,16 +25,39 @@ public class RedisServiceRegisterImpl implements ServiceRegister {
         String rootKey = MD5Utils.encode(Constant.ROOT_KEY).substring(12, 28);
         // 作为hash的key
         String serviceNameKey = MD5Utils.encode(serviceName + serviceName.hashCode()).substring(8, 24);
-        if (!jedis.hexists(rootKey, serviceNameKey)){
+        if (!jedis.hexists(rootKey, serviceNameKey)) {
             jedis.hset(rootKey, serviceNameKey, address);
             logger.debug("Create service node. rootKey: %s, serviceNode: %s", rootKey, serviceNameKey);
-        }else {
+        } else {
             String addrListVal = jedis.hget(rootKey, serviceNameKey);
-            addrListVal += "-" + address;
-            jedis.hset(rootKey, serviceNameKey, addrListVal);
-            logger.debug("Register address to service no. serviceNode: %s, address: %s", serviceNameKey, address);
+            if (!isExistAddress(addrListVal, address)) {
+
+                addrListVal += "-" + address;
+                jedis.hset(rootKey, serviceNameKey, addrListVal);
+                logger.debug("Register address to service on serviceNode: %s, address: %s", serviceNameKey, address);
+            } else {
+                logger.debug("The address: %s had been register on serviceNode: %s", address, serviceNameKey);
+            }
         }
 
         jedis.close();
+    }
+
+    /**
+     * 校验一下要插入的地址是不是已经存在，避免重复
+     *
+     * @param addrListVal 获取出来的地址列表
+     * @param address     要插入的地址
+     * @return
+     */
+    private boolean isExistAddress(String addrListVal, String address) {
+
+        String[] addrArr = addrListVal.split("-");
+        for (String s : addrArr) {
+            if (s.equals(address)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

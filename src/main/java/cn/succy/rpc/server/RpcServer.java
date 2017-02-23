@@ -43,17 +43,19 @@ public class RpcServer {
 
     /**
      * 注册服务
+     * @param interfaceCls 指定远程接口，要高速rpc，哪个接口才是远程的服务接口
+     *                     有可能服务类对象实现了多个接口
      * @param target 要注册的服务实现类
      * @param version 服务版本号
      * @return
      */
-    public RpcServer registerService(Object target, String version) {
+    public RpcServer registerService(Class<?> interfaceCls, Object target, String version) {
         if (target == null) {
             logger.error("target service is not null.");
             return null;
         }
-        Class<?> targetCls = target.getClass();
-        String serviceName = targetCls.getName();
+
+        String serviceName = interfaceCls.getName();
 
         if (version != null && !"".equals(version.trim())) {
             serviceName += "-" + version;

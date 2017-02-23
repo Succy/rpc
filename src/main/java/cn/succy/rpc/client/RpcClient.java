@@ -7,6 +7,7 @@ import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -70,7 +71,12 @@ public class RpcClient extends ChannelInboundHandlerAdapter{
                         }
                     });
 
+
+
             ChannelFuture future = bs.connect(host, port).sync();
+            Channel channel = future.channel();
+            channel.writeAndFlush(request).sync();
+            channel.closeFuture().sync();
             future.channel().closeFuture().sync();
             return response;
         } catch (Exception e) {
