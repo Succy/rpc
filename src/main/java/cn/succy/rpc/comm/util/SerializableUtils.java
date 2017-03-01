@@ -19,7 +19,7 @@ public class SerializableUtils {
     }
 
     // 生成schema比较耗时，缓存起来
-    private static Map<Class<?>, Schema> cacheMap = new ConcurrentHashMap<>();
+    private static Map<Class<?>, Schema> cacheMap = new ConcurrentHashMap<Class<?>, Schema>();
 
     /**
      * 对指定Java对象进行序列化
