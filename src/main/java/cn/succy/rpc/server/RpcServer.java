@@ -38,7 +38,7 @@ public class RpcServer {
         this.host = host;
         this.port = port;
         this.register = register;
-        handleServiceMap = new HashMap<>();
+        handleServiceMap = new HashMap<String, Object>();
     }
 
     /**

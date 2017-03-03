@@ -37,7 +37,7 @@ public class RpcServerBean implements ApplicationContextAware, InitializingBean 
     private ServiceRegister serviceRegister;// 服务注册器
 
     // serviceName --> serviceBean
-    private Map<String, Object> handleServiceMap = new HashMap<>();
+    private Map<String, Object> handleServiceMap = new HashMap<String, Object>();
 
     // 提供带参构造器，可以在spring中使用构造器注入
     public RpcServerBean(String serverAddress, ServiceRegister serviceRegister) {
