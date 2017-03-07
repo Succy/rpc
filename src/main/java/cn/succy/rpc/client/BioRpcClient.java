@@ -43,6 +43,7 @@ public class BioRpcClient {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         try {
+            long openS = System.currentTimeMillis();
             if (host != null && !"".equals(host) && port > 0) {
                 socket = new Socket(host, port);
             } else if (discover == null) {
@@ -70,13 +71,20 @@ public class BioRpcClient {
 
             in = new BufferedInputStream(socket.getInputStream());
             out = new BufferedOutputStream(socket.getOutputStream());
+            long s = System.currentTimeMillis();
             byte[] req = SerializableUtils.serialize(request);
+            long e = System.currentTimeMillis();
+            System.out.println("serialize times: " + (e - s) + " ms");
             // send req to server
             byte[] reqHeader = new byte[4];
             // int --> byte[]
             for (int i = 0; i < 4; ++i) {
                 reqHeader[i] = (byte) (req.length >> 8 * (3 - i) & 0xFF);
             }
+            long openE = System.currentTimeMillis();
+            System.out.println("open socket times: " + (openE - openS) + " ms");
+
+            long sendS = System.currentTimeMillis();
             out.write(reqHeader, 0, 4);
             out.write(req, 0, req.length);
             out.flush();
@@ -108,6 +116,9 @@ public class BioRpcClient {
                 throw new Exception(String.format("Incomplete response body, expected resp body len is %d, but real len is %d", respBodyLen, (respLen - 4)));
             }
 
+            long sendE = System.currentTimeMillis();
+            System.out.println("send times: " + (sendE - sendS) + " ms");
+
             long start = System.currentTimeMillis();
             Response response = SerializableUtils.deserialize(Arrays.copyOfRange(respArr, 4, respLen), Response.class);
             long end = System.currentTimeMillis();
@@ -130,12 +141,12 @@ public class BioRpcClient {
         }
     }
 
-    public <T> T getClientProxy(final Class<?> interfaceCls) {
+    public <T> T getClientProxy(final Class<T> interfaceCls) {
         return getClientProxy(interfaceCls, "");
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getClientProxy(final Class<?> interfaceCls, final String version) {
+    public <T> T getClientProxy(final Class<T> interfaceCls, final String version) {
         return (T) Proxy.newProxyInstance(interfaceCls.getClassLoader(), new Class<?>[]{interfaceCls}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
