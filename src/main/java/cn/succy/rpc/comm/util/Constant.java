@@ -37,4 +37,13 @@ public class Constant {
             }
         }
     }
+
+    /**
+     * 提供配置文件相关的常量
+     */
+    public static final class Prop {
+        public static final String CONF_FILE = "config.properties";
+        public static final String BASE_SCAN_PACKAGE = "rpc.base_scan_package";
+
+    }
 }

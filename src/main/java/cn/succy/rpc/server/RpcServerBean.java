@@ -1,6 +1,7 @@
 package cn.succy.rpc.server;
 
 import cn.succy.rpc.comm.ServiceRegister;
+import cn.succy.rpc.comm.annotation.RpcService;
 import cn.succy.rpc.comm.codec.ProtoDecoder;
 import cn.succy.rpc.comm.codec.ProtoEncoder;
 import cn.succy.rpc.comm.log.Logger;
