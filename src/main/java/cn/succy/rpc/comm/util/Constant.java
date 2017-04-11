@@ -44,6 +44,15 @@ public class Constant {
     public static final class Prop {
         public static final String CONF_FILE = "config.properties";
         public static final String BASE_SCAN_PACKAGE = "rpc.base_scan_package";
+        public static final String REDIS_HOST = "redis.host";
+        public static final String REDIS_PORT = "redis.port";
+        public static final String REDIS_TIMEOUT = "redis.timeout";
+        public static final String REDIS_POOL_MAXACTIVE = "redis.pool.maxActive";
+        public static final String REDIS_POOL_MAXIDLE = "redis.pool.maxIdle";
+        public static final String REDIS_POOL_MINIDLE = "redis.pool.minIdle";
+        public static final String REDIS_POOL_MAXWAIT = "redis.pool.maxWait";
+        public static final String REDIS_POOL_TESTONBORROW = "redis.pool.testOnBorrow";
+        public static final String REDIS_POOL_TESTONRETURN = "redis.pool.testOnReturn";
 
     }
 }

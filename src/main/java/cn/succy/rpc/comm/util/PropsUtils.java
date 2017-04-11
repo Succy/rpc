@@ -39,6 +39,7 @@ public final class PropsUtils {
 
         } catch (IOException e) {
             logger.error("load props file error", e);
+            throw new RuntimeException(e);
         } finally {
             if (in != null) {
                 try {

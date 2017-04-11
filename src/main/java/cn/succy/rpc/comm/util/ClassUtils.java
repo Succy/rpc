@@ -73,7 +73,6 @@ public final class ClassUtils {
                     if ("file".equals(protocol)) {
                         // 获取子包或者class文件
                         String pkgPath = url.getPath().replaceAll("%20", "");
-                        System.out.println("classPath = " + pkgPath);
                         addClasses(classSet, pkgPath, packageName);
                     } else if ("jar".equals(protocol)) {
                         // 打开jar包，并取得jar包内部的class文件
