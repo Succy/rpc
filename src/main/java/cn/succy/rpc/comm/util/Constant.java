@@ -14,13 +14,21 @@ public class Constant {
     public static final String ROOT_KEY = "rpc";
 
     /**
+     * 默认值的常量
+     */
+    public static final String DEFAULT_SERVER_HOST = "127.0.0.1";
+    public static final int DEFAULT_SERVER_PORT = 9876;
+    public static final String DEFAULT_SERVICE_DISCOVER_CLASS = "cn.succy.rpc.comm.RedisServiceDiscoverImpl";
+    public static final String DEFAULT_SERVICE_REGISTER_CLASS = "cn.succy.rpc.comm.RedisServiceRegisterImpl";
+
+    /**
      * 通过内部类定义响应码
      */
     public static final class RespCode {
         public static final int OK = 0;
         public static final int ERROR = -1;
-    }
 
+    }
 
     /**
      * 通过内部类定义响应消息文本
@@ -54,5 +62,10 @@ public class Constant {
         public static final String REDIS_POOL_TESTONBORROW = "redis.pool.testOnBorrow";
         public static final String REDIS_POOL_TESTONRETURN = "redis.pool.testOnReturn";
 
+        public static final String SERVER_HOST = "rpc.server.host";
+        public static final String SERVER_PORT = "rpc.server.port";
+
+        public static final String SERVICE_DISCOVER_CLASS = "rpc.service.discoverClass";
+        public static final String SERVICE_REGISTER_CLASS = "rpc.service.registerClass";
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>cn.succy.rpc</groupId>
     <artifactId>rpc</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <build>
@@ -27,17 +27,6 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.7.Final</version>
-        </dependency>
-        <!--spring-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>4.2.8.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>4.2.8.RELEASE</version>
         </dependency>
         <!--log4j-->
         <dependency>

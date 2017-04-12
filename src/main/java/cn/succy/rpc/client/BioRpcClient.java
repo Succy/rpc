@@ -1,6 +1,9 @@
 package cn.succy.rpc.client;
 
 import cn.succy.rpc.comm.ServiceDiscover;
+import cn.succy.rpc.comm.kit.BeanKit;
+import cn.succy.rpc.comm.kit.PropsKit;
+import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
@@ -18,24 +21,25 @@ import java.util.UUID;
 
 /**
  * Bio客户端实现，由于客户端只有一个，使用netty作为客户端太过于重量级，导致性能过慢
+ *
  * @author Succy
  * @date 2017/2/28 17:48
  */
 public class BioRpcClient {
+    private static final ServiceDiscover discover = (ServiceDiscover) BeanKit.getBean(PropsKit.getServiceDiscoverClass());
     private String host;
     private int port;
-    private ServiceDiscover discover;
     private Response response;
 
-    private static final cn.succy.rpc.comm.log.Logger logger = LoggerFactory.getLogger(BioRpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(BioRpcClient.class);
 
     public BioRpcClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    public BioRpcClient(ServiceDiscover discover) {
-        this.discover = discover;
+    public BioRpcClient() {
+
     }
 
     private void send(Request request) throws Exception {
@@ -55,7 +59,7 @@ public class BioRpcClient {
                 if (version != null && !"".equals(version)) {
                     serviceName += "-" + version;
                 }
-                String address = this.discover.discover(serviceName);
+                String address = discover.discover(serviceName);
                 if (address != null && !"".equals(address)) {
                     String[] addrArr = address.split(":");
                     if (addrArr.length == 2) {

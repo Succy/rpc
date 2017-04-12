@@ -5,6 +5,7 @@ import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
 import cn.succy.rpc.comm.util.Constant;
+import cn.succy.rpc.comm.util.ReflectionUtils;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -84,8 +85,7 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
         Object[] params = req.getParams();
 
         Method method = serviceClass.getDeclaredMethod(methodName, paramTypes);
-        // 让反射可以执行私有方法
-        method.setAccessible(true);
-        return method.invoke(service, params);
+
+        return ReflectionUtils.invokeMethod(service, method, params);
     }
 }

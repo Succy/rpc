@@ -6,5 +6,5 @@ package cn.succy.rpc.comm;
  * @date 2017-02-19 16:12
  */
 public interface ServiceDiscover {
-    public String discover(String serviceName);
+    String discover(String serviceName);
 }

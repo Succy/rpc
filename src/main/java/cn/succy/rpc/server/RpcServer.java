@@ -1,8 +1,12 @@
 package cn.succy.rpc.server;
 
 import cn.succy.rpc.comm.ServiceRegister;
+import cn.succy.rpc.comm.annotation.Component;
+import cn.succy.rpc.comm.annotation.RpcService;
 import cn.succy.rpc.comm.codec.ProtoDecoder;
 import cn.succy.rpc.comm.codec.ProtoEncoder;
+import cn.succy.rpc.comm.kit.BeanKit;
+import cn.succy.rpc.comm.kit.PropsKit;
 import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
@@ -17,8 +21,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Rpc服务器
@@ -26,50 +30,33 @@ import java.util.Map;
  * @author Succy
  * @date 2017/2/21 19:56
  */
+@Component
 public class RpcServer {
-    private String host;
-    private int port;
-    private ServiceRegister register;
-
-    private Map<String, Object> handleServiceMap;
     private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final String host = PropsKit.getServerHost();
+    private static final int port = PropsKit.getServerPort();
+    private static final Map<Class<?>, Object> bwaMap = BeanKit.getBeansMapWithAnnotation(RpcService.class);
+    private static final Map<String, Object> handleServiceMap = new ConcurrentHashMap<>();
+    private static final ServiceRegister register = (ServiceRegister) BeanKit.getBean(PropsKit.getServiceRegisterClass());
 
-    public RpcServer(String host, int port, ServiceRegister register) {
-        this.host = host;
-        this.port = port;
-        this.register = register;
-        handleServiceMap = new HashMap<String, Object>();
+    static {
+        if (bwaMap != null && !bwaMap.isEmpty()) {
+            for (Object bean : bwaMap.values()) {
+                RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+                String serviceName = rpcService.value().getName();
+                String version = rpcService.version();
+                if (version != null && !"".equals(version.trim())) {
+                    serviceName = serviceName + "-" + version;
+                }
+                String serviceAddress = host + ":" + port;
+                // 注册服务
+                register.register(serviceName, serviceAddress);
+                handleServiceMap.put(serviceName, bean);
+            }
+        }
     }
 
-    /**
-     * 注册服务
-     *
-     * @param interfaceCls 指定远程接口，要高速rpc，哪个接口才是远程的服务接口
-     *                     有可能服务类对象实现了多个接口
-     * @param target       要注册的服务实现类
-     * @param version      服务版本号
-     * @return
-     */
-    public RpcServer registerService(Class<?> interfaceCls, Object target, String version) {
-        if (target == null) {
-            logger.error("target service is not null.");
-            return null;
-        }
-
-        String serviceName = interfaceCls.getName();
-
-        if (version != null && !"".equals(version.trim())) {
-            serviceName += "-" + version;
-        }
-        String serviceAddress = host + ":" + port;
-        try {
-            register.register(serviceName, serviceAddress);
-        } catch (NullPointerException e) {
-            logger.error("register is null", e);
-            return null;
-        }
-        handleServiceMap.put(serviceName, target);
-        return this;
+    public RpcServer() {
     }
 
     /**

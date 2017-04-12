@@ -14,17 +14,17 @@ public class BioClient {
     private static CountDownLatch latch;
     public static void main(String[] args) {
         final Object obj = new Object();
-        latch = new CountDownLatch(1000);
+        latch = new CountDownLatch(10);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (obj) {
                         long start = System.currentTimeMillis();
-                        BioRpcClient client = new BioRpcClient("127.0.0.1", 9568);
+                        BioRpcClient client = new BioRpcClient();
 
-                        HelloService service = client.getClientProxy(HelloService.class, "hello.service1");
+                        HelloService service = client.getClientProxy(HelloService.class, "hello1");
                         String msg = service.sayHello("我是中国人！！！！");
                         System.out.println("msg: " + msg);
                         long end = System.currentTimeMillis();

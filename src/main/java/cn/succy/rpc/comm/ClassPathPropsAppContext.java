@@ -7,7 +7,6 @@ import cn.succy.rpc.comm.kit.PropsKit;
 import cn.succy.rpc.comm.util.ClassUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -60,16 +59,7 @@ public class ClassPathPropsAppContext {
      * @return bean的映射集合
      */
     public Map<Class<?>, Object> getBeansWithAnnotation(Class<? extends Annotation> clazz) {
-        Map<Class<?>, Object> beanClassMap = BeanKit.getBeanClassMap();
-        Map<Class<?>, Object> bwaMap = new HashMap<>();
-        for (Map.Entry<Class<?>, Object> entry : beanClassMap.entrySet()) {
-            Class<?> key = entry.getKey();
-            Object value = entry.getValue();
-            if (key.isAnnotationPresent(clazz)) {
-                bwaMap.put(key, value);
-            }
-        }
-        return bwaMap;
+        return BeanKit.getBeansMapWithAnnotation(clazz);
     }
 
 }

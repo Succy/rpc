@@ -1,5 +1,6 @@
 package cn.succy.rpc.comm;
 
+import cn.succy.rpc.comm.annotation.Component;
 import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.util.Constant;
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Succy
  * @date 2017-02-19 21:10
  **/
-
+@Component
 public class RedisServiceRegisterImpl implements ServiceRegister {
     private static final Logger logger = LoggerFactory.getLogger(RedisServiceRegisterImpl.class);
     private static final Map<String, String> cacheMap = new ConcurrentHashMap<String, String>();

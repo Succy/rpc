@@ -12,11 +12,12 @@ import redis.clients.jedis.JedisPoolConfig;
  * @date 2017-02-19 17:43
  **/
 
-public class JedisUtils {
+public final class JedisUtils {
 
     private static JedisPool pool = null;
 
     private JedisUtils() {
+        throw new AssertionError("utils class can not be instance");
     }
 
     /**

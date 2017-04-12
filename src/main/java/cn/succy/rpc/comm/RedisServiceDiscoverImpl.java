@@ -1,5 +1,6 @@
 package cn.succy.rpc.comm;
 
+import cn.succy.rpc.comm.annotation.Component;
 import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.util.Constant;
@@ -15,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Succy
  * @date 2017-02-19 21:04
  **/
+@Component
 public class RedisServiceDiscoverImpl implements ServiceDiscover {
     private static final Logger logger = LoggerFactory.getLogger(RedisServiceDiscoverImpl.class);
 

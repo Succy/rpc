@@ -65,4 +65,20 @@ public final class PropsKit {
     public static boolean getRedisPoolTestOnReturn() {
         return PropsUtils.getBoolean(PROPS, Constant.Prop.REDIS_POOL_TESTONRETURN, false);
     }
+
+    public static String getServerHost() {
+        return PropsUtils.getString(PROPS, Constant.Prop.SERVER_HOST, Constant.DEFAULT_SERVER_HOST);
+    }
+
+    public static int getServerPort() {
+        return PropsUtils.getInt(PROPS, Constant.Prop.SERVER_PORT, Constant.DEFAULT_SERVER_PORT);
+    }
+
+    public static String getServiceDiscoverClass() {
+        return PropsUtils.getString(PROPS, Constant.Prop.SERVICE_DISCOVER_CLASS, Constant.DEFAULT_SERVICE_DISCOVER_CLASS);
+    }
+
+    public static String getServiceRegisterClass() {
+        return PropsUtils.getString(PROPS, Constant.Prop.SERVICE_REGISTER_CLASS, Constant.DEFAULT_SERVICE_REGISTER_CLASS);
+    }
 }

@@ -6,5 +6,5 @@ package cn.succy.rpc.comm;
  * @date 2017-02-19 15:57
  */
 public interface ServiceRegister {
-    public void register(String serviceName, String address);
+    void register(String serviceName, String address);
 }
