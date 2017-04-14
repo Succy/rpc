@@ -71,8 +71,6 @@ public class RpcClient extends ChannelInboundHandlerAdapter{
                         }
                     });
 
-
-
             ChannelFuture future = bs.connect(host, port).sync();
             Channel channel = future.channel();
             channel.writeAndFlush(request).sync();
