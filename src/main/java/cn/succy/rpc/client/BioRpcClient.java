@@ -25,7 +25,7 @@ import java.util.UUID;
  * @author Succy
  * @date 2017/2/28 17:48
  */
-public class BioRpcClient {
+public class BioRpcClient implements RpcClient {
     private static final ServiceDiscover discover = (ServiceDiscover) BeanKit.getBean(PropsKit.getServiceDiscoverClass());
     private String host;
     private int port;
@@ -145,11 +145,13 @@ public class BioRpcClient {
         }
     }
 
+    @Override
     public <T> T getClientProxy(final Class<T> interfaceCls) {
         return getClientProxy(interfaceCls, "");
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T getClientProxy(final Class<T> interfaceCls, final String version) {
         return (T) Proxy.newProxyInstance(interfaceCls.getClassLoader(), new Class<?>[]{interfaceCls}, new InvocationHandler() {
             @Override

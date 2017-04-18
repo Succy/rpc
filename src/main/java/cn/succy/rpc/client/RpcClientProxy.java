@@ -69,7 +69,7 @@ public class RpcClientProxy {
                     if (addrArr.length == 2) {
                         String host = addrArr[0];
                         int port = Integer.parseInt(addrArr[1]);
-                        RpcClient client = new RpcClient(host, port);
+                        NettyRpcClient client = new NettyRpcClient(host, port);
                         Response resp = client.send(request);
                         if (resp == null) {
                             logger.error("receive response fail");
