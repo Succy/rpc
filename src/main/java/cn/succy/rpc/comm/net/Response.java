@@ -9,7 +9,7 @@ public class Response {
     private int respCode;
     private String msg;
     private Object data;
-
+    // getter/setter
     public Response() {
     }
 

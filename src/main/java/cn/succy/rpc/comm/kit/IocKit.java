@@ -14,7 +14,6 @@ import java.util.Map;
  * @date 2017/4/11 10:22
  */
 public final class IocKit {
-
     static {
         init();
     }

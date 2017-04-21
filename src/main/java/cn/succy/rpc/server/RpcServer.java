@@ -71,7 +71,6 @@ public class RpcServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
-
                         @Override
                         protected void initChannel(SocketChannel sc) throws Exception {
                             // 对请求消息进行解码
@@ -84,10 +83,8 @@ public class RpcServer {
                             sc.pipeline().addLast(new RpcServerHandler(handleServiceMap));
                         }
                     });
-
             // 启动服务器
             ChannelFuture future = sb.bind(host, port).sync();
-
             logger.info("server start on host: %s port: %d", host, port);
             // 同步等待服务器关闭
             future.channel().closeFuture().sync();

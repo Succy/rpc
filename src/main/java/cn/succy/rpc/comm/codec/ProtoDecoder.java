@@ -26,7 +26,6 @@ public class ProtoDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
         // 在编码的时候，会先将数据的长度写入，长度是int类型，占4个字节
         if (byteBuf.readableBytes() < 4) {
-
             // 读取到的数据如果<4，说明该包不完整或为空包
             return;
         }
@@ -41,7 +40,6 @@ public class ProtoDecoder extends ByteToMessageDecoder {
         }
         byte[] data = new byte[len];
         byteBuf.readBytes(data);
-
         list.add(SerializableUtils.deserialize(data, clazz));
     }
 }

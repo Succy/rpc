@@ -14,6 +14,8 @@ public class Request {
     private Class<?>[] paramTypes;
     private Object[] params;
 
+    // getter/setter
+
     public Request() {
     }
 
