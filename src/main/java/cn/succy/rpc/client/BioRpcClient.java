@@ -8,6 +8,7 @@ import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
 import cn.succy.rpc.comm.util.SerializableUtils;
+import cn.succy.rpc.comm.util.StringUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -47,8 +48,7 @@ public class BioRpcClient implements RpcClient {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         try {
-            long openS = System.currentTimeMillis();
-            if (host != null && !"".equals(host) && port > 0) {
+            if (!StringUtils.isEmpty(host) && port > 0) {
                 socket = new Socket(host, port);
             } else if (discover == null) {
                 logger.error("discover is null!");
@@ -56,11 +56,11 @@ public class BioRpcClient implements RpcClient {
             } else {
                 String serviceName = request.getInterfaceName();
                 String version = request.getServiceVersion();
-                if (version != null && !"".equals(version)) {
+                if (!StringUtils.isEmpty(version)) {
                     serviceName += "-" + version;
                 }
                 String address = discover.discover(serviceName);
-                if (address != null && !"".equals(address)) {
+                if (!StringUtils.isEmpty(address)) {
                     String[] addrArr = address.split(":");
                     if (addrArr.length == 2) {
                         socket = new Socket(addrArr[0], Integer.parseInt(addrArr[1]));
@@ -75,20 +75,14 @@ public class BioRpcClient implements RpcClient {
 
             in = new BufferedInputStream(socket.getInputStream());
             out = new BufferedOutputStream(socket.getOutputStream());
-            long s = System.currentTimeMillis();
             byte[] req = SerializableUtils.serialize(request);
-            long e = System.currentTimeMillis();
-            System.out.println("serialize times: " + (e - s) + " ms");
             // send req to server
             byte[] reqHeader = new byte[4];
             // int --> byte[]
             for (int i = 0; i < 4; ++i) {
                 reqHeader[i] = (byte) (req.length >> 8 * (3 - i) & 0xFF);
             }
-            long openE = System.currentTimeMillis();
-            System.out.println("open socket times: " + (openE - openS) + " ms");
 
-            long sendS = System.currentTimeMillis();
             out.write(reqHeader, 0, 4);
             out.write(req, 0, req.length);
             out.flush();
@@ -120,18 +114,13 @@ public class BioRpcClient implements RpcClient {
                 throw new Exception(String.format("Incomplete response body, expected resp body len is %d, but real len is %d", respBodyLen, (respLen - 4)));
             }
 
-            long sendE = System.currentTimeMillis();
-            System.out.println("send times: " + (sendE - sendS) + " ms");
-
-            long start = System.currentTimeMillis();
             Response response = SerializableUtils.deserialize(Arrays.copyOfRange(respArr, 4, respLen), Response.class);
-            long end = System.currentTimeMillis();
-            System.out.println("deserialize times: " + (end - start) + " ms");
             if (response == null) {
                 logger.error("bad response, the response is null");
                 throw new Exception("bad response, the response is null");
             }
-            System.out.println(response);
+            // System.out.println(response);
+            logger.debug("recv from server, %s", response);
             setResponse(response);
 
             resp.close();

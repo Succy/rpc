@@ -1,11 +1,8 @@
 package cn.succy.rpc.test.server;
 
-import cn.succy.rpc.server.RpcService;
+import cn.succy.rpc.comm.annotation.RpcService;
 import cn.succy.rpc.test.api.HelloService;
 import cn.succy.rpc.test.bean.Student;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author Succy

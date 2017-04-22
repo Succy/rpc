@@ -1,14 +1,20 @@
 package cn.succy.rpc.client;
 
+import cn.succy.rpc.comm.ServiceDiscover;
 import cn.succy.rpc.comm.codec.ProtoDecoder;
 import cn.succy.rpc.comm.codec.ProtoEncoder;
+import cn.succy.rpc.comm.kit.BeanKit;
+import cn.succy.rpc.comm.kit.PropsKit;
 import cn.succy.rpc.comm.log.Logger;
 import cn.succy.rpc.comm.log.LoggerFactory;
 import cn.succy.rpc.comm.net.Request;
 import cn.succy.rpc.comm.net.Response;
+import cn.succy.rpc.comm.util.Constant;
+import cn.succy.rpc.comm.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
@@ -19,16 +25,28 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.UUID;
+
 /**
  * rpc客户端，用来发送请求和返回请求结果的响应消息，一般该类由代理类调用
+ *
  * @author Succy
  * @date 2017/2/22 9:52
  */
-public class NettyRpcClient extends ChannelInboundHandlerAdapter{
+@ChannelHandler.Sharable
+public class NettyRpcClient extends ChannelInboundHandlerAdapter implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(NettyRpcClient.class);
-    private final String host;
-    private final int port;
+    private static final ServiceDiscover discover = (ServiceDiscover) BeanKit.getBean(PropsKit.getServiceDiscoverClass());
     private Response response;
+    private String host;
+    private int port;
+
+
+    public NettyRpcClient() {
+    }
 
 
     public NettyRpcClient(String host, int port) {
@@ -39,7 +57,7 @@ public class NettyRpcClient extends ChannelInboundHandlerAdapter{
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         this.response = (Response) msg;
-        logger.info("recv from server:[%s]", response);
+        logger.debug("recv from server:[%s]", response);
     }
 
     @Override
@@ -50,10 +68,11 @@ public class NettyRpcClient extends ChannelInboundHandlerAdapter{
 
     /**
      * 客户端发送请求到服务器
+     *
      * @param request 要发送的请求
      * @ 返回响应消息
      */
-    public Response send(Request request) {
+    private Response send(Request request, String host, int port) {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bs = new Bootstrap();
@@ -84,5 +103,63 @@ public class NettyRpcClient extends ChannelInboundHandlerAdapter{
             group.shutdownGracefully();
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getClientProxy(Class<T> interfaceCls, final String version) {
+        return (T) Proxy.newProxyInstance(interfaceCls.getClassLoader(), new Class<?>[]{interfaceCls}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                Request request = new Request();
+                String requestId = UUID.randomUUID().toString();
+                request.setRequestId(requestId);
+                request.setInterfaceName(method.getDeclaringClass().getName());
+                request.setMethodName(method.getName());
+                request.setParamTypes(method.getParameterTypes());
+                request.setParams(args);
+                request.setServiceVersion(version);
+
+                String serviceName = request.getInterfaceName();
+                if (StringUtils.isEmpty(host) || port == 0) {
+                    if (discover == null) {
+                        logger.error("discover must be not null");
+                        throw new RuntimeException("discover is null!");
+                    }
+                    if (!StringUtils.isEmpty(version)) {
+                        serviceName += "-" + version;
+                    }
+                    String serverAddress = discover.discover(serviceName);
+                    if (!"".equals(serverAddress.trim())) {
+                        String[] addrArr = serverAddress.split(":");
+                        if (addrArr.length == 2) {
+                            host = addrArr[0];
+                            port = Integer.parseInt(addrArr[1]);
+                        }
+                    } else {
+                        // host port没有值，抛异常
+                        logger.error("host not found error");
+                        throw new RuntimeException("host not found exception");
+                    }
+                }
+
+                Response resp = send(request, host, port);
+                if (resp == null) {
+                    logger.error("receive response fail");
+                    throw new RuntimeException("receive response fail");
+                } else {
+                    // 响应表示成功
+                    if (resp.getRespCode() == Constant.RespCode.OK) {
+                        return resp.getData();
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public <T> T getClientProxy(Class<T> interfaceCls) {
+        return getClientProxy(interfaceCls, "");
     }
 }

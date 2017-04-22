@@ -24,10 +24,7 @@ public class ProtoEncoder extends MessageToByteEncoder {
     protected void encode(ChannelHandlerContext ctx, Object obj, ByteBuf byteBuf) throws Exception {
         // 只对属于clazz的类型的实例进行编码
         if (clazz.isInstance(obj)) {
-            long start = System.currentTimeMillis();
             byte[] data = SerializableUtils.serialize(obj);
-            long end = System.currentTimeMillis();
-            System.out.println("serialize times: " + (end - start) + " ms");
             byteBuf.writeInt(data.length);
             byteBuf.writeBytes(data);
         }

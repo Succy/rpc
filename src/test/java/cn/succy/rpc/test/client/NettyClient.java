@@ -1,26 +1,23 @@
 package cn.succy.rpc.test.client;
 
-import cn.succy.rpc.client.BioRpcClient;
+import cn.succy.rpc.client.NettyRpcClient;
 import cn.succy.rpc.client.RpcClient;
 import cn.succy.rpc.test.api.HelloService;
 import cn.succy.rpc.test.bean.Student;
 
 /**
  * @author Succy
- * @date 2017/2/28 19:53
+ * @date 2017/4/22 16:26
  */
-public class BioClient {
-
-    // private static CountDownLatch latch;
+public class NettyClient {
     public static void main(String[] args) {
-        RpcClient client = new BioRpcClient("127.0.0.1", 9587);
+        RpcClient client = new NettyRpcClient("127.0.0.1", 9587);
         HelloService service = client.getClientProxy(HelloService.class, "hello1");
         System.out.println("========== sayHello =========");
         sayHello(service);
         System.out.println("========== echoStudent =========");
         echoStu(service);
     }
-
     private static void sayHello(HelloService service) {
         long start = System.currentTimeMillis();
         String recv = service.sayHello("你好吗，我是中国人");
